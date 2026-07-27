@@ -62,12 +62,28 @@ shows the plain rule-based explanation instead of a Claude-written one.
 
 ## Deploying
 
-- `web/` builds to static files (`npm run build:web`) — deploy for free to
-  GitHub Pages, Netlify, Vercel, or Cloudflare Pages.
-- `server/` is a plain Express app — deploy to any Node host (Fly.io, Render,
-  Railway, a VPS...) and set `ANTHROPIC_API_KEY` there. Point the web app's
-  `/api` requests at that host in production (see `web/vite.config.ts`'s dev
-  proxy for the equivalent local setup).
+**Web app:** `.github/workflows/deploy-pages.yml` builds `web/` and publishes
+it to GitHub Pages automatically on every push (requires Settings → Pages →
+Source: GitHub Actions, and a public repo unless you're on GitHub Pro/Team).
+Live at `https://<owner>.github.io/<repo>/`.
+
+**Server (optional, for AI-written coach notes):** `render.yaml` is a Render
+Blueprint for `server/`. To deploy it:
+
+1. Go to [render.com](https://render.com), sign in with GitHub.
+2. **New → Blueprint**, pick this repo — Render reads `render.yaml`
+   automatically and creates a free web service.
+3. In the service's **Environment** tab, set `ANTHROPIC_API_KEY` (Render
+   never shares this with anyone else, including whoever wrote this repo).
+4. Copy the service's URL (`https://couch-to-consistent-api-xxxx.onrender.com`),
+   then in this repo go to **Settings → Actions → Variables** and add a
+   repository variable `VITE_API_BASE_URL` set to that URL. The next Pages
+   deploy will point the app at it.
+
+Render's free tier spins down after inactivity, so the first request after a
+while takes a few seconds — the app already tolerates that (see below).
+Without this step, the app works fully anyway and just shows the plain
+rule-based explanation instead of Claude's version.
 
 ## Roadmap
 

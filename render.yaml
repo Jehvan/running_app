@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: couch-to-consistent-api
+    runtime: node
+    plan: free
+    rootDir: server
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
