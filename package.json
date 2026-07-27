@@ -1,0 +1,10 @@
+{
+  "name": "running-app",
+  "private": true,
+  "scripts": {
+    "dev:web": "npm --prefix web run dev",
+    "dev:server": "npm --prefix server run dev",
+    "build:web": "npm --prefix web run build",
+    "install:all": "npm --prefix web install && npm --prefix server install"
+  }
+}
