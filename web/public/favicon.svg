@@ -1,29 +1,36 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#0b1220"/>
-      <stop offset="1" stop-color="#0b1220"/>
+    <linearGradient id="c2c-bg" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#020617"/>
     </linearGradient>
-    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#facc15"/>
-      <stop offset="1" stop-color="#f59e0b"/>
+    <radialGradient id="c2c-glow" cx="248" cy="238" r="236" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#22d3ee" stop-opacity="0.20"/>
+      <stop offset="0.55" stop-color="#22d3ee" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#22d3ee" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="c2c-arc" x1="362" y1="352" x2="256" y2="108" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0e7490"/>
+      <stop offset="0.30" stop-color="#22d3ee"/>
+      <stop offset="1" stop-color="#7dd3fc"/>
     </linearGradient>
-    <linearGradient id="disc" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#22d3ee"/>
-      <stop offset="1" stop-color="#0e7490"/>
-    </linearGradient>
+    <radialGradient id="c2c-dot" cx="379" cy="178" r="46" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ecfeff"/>
+      <stop offset="1" stop-color="#22d3ee"/>
+    </radialGradient>
+    <radialGradient id="c2c-dotglow" cx="397" cy="190" r="66" gradientUnits="userSpaceOnUse">
+      <stop offset="0.42" stop-color="#67e8f9" stop-opacity="0.34"/>
+      <stop offset="1" stop-color="#67e8f9" stop-opacity="0"/>
+    </radialGradient>
   </defs>
-  <rect width="512" height="512" fill="url(#bg)"/>
-  <circle cx="256" cy="256" r="196" fill="url(#ring)"/>
-  <circle cx="256" cy="256" r="168" fill="url(#disc)"/>
-  <g fill="#ffffff" transform="translate(-14,-10)">
-    <circle cx="316" cy="150" r="26"/>
-    <path d="M292,178 C287,199 282,217 267,235 C299,245 311,235 323,225 C333,217 333,196 320,178 Z"/>
-    <path d="M290,184 C262,193 244,205 220,200 C217,193 220,184 228,181 C252,176 274,175 290,177 Z"/>
-    <path d="M309,189 C332,201 346,220 363,225 C367,217 365,208 358,201 C342,187 323,181 309,181 Z"/>
-    <path d="M280,222 C262,231 254,252 260,273 C271,273 282,269 285,257 C293,242 288,227 280,222 Z"/>
-    <path d="M261,269 C247,280 232,287 212,287 C210,280 213,272 221,269 C237,262 253,262 261,269 Z"/>
-    <path d="M297,226 C319,240 337,253 353,273 C346,281 335,282 327,276 C310,264 295,246 288,231 Z"/>
-    <path d="M343,269 C359,272 373,269 381,258 C375,251 366,249 357,251 C348,254 343,262 343,269 Z"/>
+
+  <rect x="0" y="0" width="512" height="512" fill="url(#c2c-bg)"/>
+  <circle cx="248" cy="238" r="236" fill="url(#c2c-glow)"/>
+
+  <g transform="translate(-8 0)">
+    <circle cx="256" cy="256" r="128" fill="none" stroke="#38bdf8" stroke-opacity="0.10" stroke-width="50"/>
+    <path d="M356.9 334.8 A128 128 0 1 1 282.6 130.8" fill="none" stroke="url(#c2c-arc)" stroke-width="50" stroke-linecap="round"/>
+    <circle cx="397" cy="190" r="66" fill="url(#c2c-dotglow)"/>
+    <circle cx="397" cy="190" r="33" fill="url(#c2c-dot)"/>
   </g>
 </svg>
