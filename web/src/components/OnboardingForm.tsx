@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { Profile } from '../lib/types'
+import type { Profile, UnitSystem } from '../lib/types'
 
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
@@ -9,6 +9,13 @@ export function OnboardingForm({ onComplete }: { onComplete: (profile: Profile) 
   const [goal, setGoal] = useState<Profile['goal']>('habit')
   const [injuryNotes, setInjuryNotes] = useState('')
 
+  const [units, setUnits] = useState<UnitSystem>('imperial')
+  const [heightFt, setHeightFt] = useState('')
+  const [heightIn, setHeightIn] = useState('')
+  const [heightCm, setHeightCm] = useState('')
+  const [weightLb, setWeightLb] = useState('')
+  const [weightKg, setWeightKg] = useState('')
+
   function toggleDay(day: number) {
     setPreferredDays((prev) =>
       prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day].sort(),
@@ -16,6 +23,20 @@ export function OnboardingForm({ onComplete }: { onComplete: (profile: Profile) 
   }
 
   function submit() {
+    const body = (() => {
+      if (units === 'imperial') {
+        const ft = parseFloat(heightFt)
+        const inch = parseFloat(heightIn) || 0
+        const lb = parseFloat(weightLb)
+        if (!ft || !lb) return undefined
+        return { units, heightCm: (ft * 12 + inch) * 2.54, weightKg: lb * 0.453592 }
+      }
+      const cm = parseFloat(heightCm)
+      const kg = parseFloat(weightKg)
+      if (!cm || !kg) return undefined
+      return { units, heightCm: cm, weightKg: kg }
+    })()
+
     onComplete({
       daysPerWeek,
       preferredDays: preferredDays.length ? preferredDays : [1, 3, 5],
@@ -23,6 +44,7 @@ export function OnboardingForm({ onComplete }: { onComplete: (profile: Profile) 
       goal,
       injuryNotes,
       createdAt: new Date().toISOString(),
+      body,
     })
   }
 
@@ -95,6 +117,76 @@ export function OnboardingForm({ onComplete }: { onComplete: (profile: Profile) 
         rows={2}
         placeholder="e.g. previous knee issue"
       />
+
+      <div className="mb-6 flex items-center justify-between">
+        <label className="block text-sm font-medium text-slate-300">
+          Height &amp; weight (optional)
+        </label>
+        <div className="flex gap-1 text-xs">
+          <button
+            onClick={() => setUnits('imperial')}
+            className={`rounded-md border px-2 py-1 ${units === 'imperial' ? 'border-cyan-400 bg-cyan-950/40' : 'border-slate-700'}`}
+          >
+            ft/lb
+          </button>
+          <button
+            onClick={() => setUnits('metric')}
+            className={`rounded-md border px-2 py-1 ${units === 'metric' ? 'border-cyan-400 bg-cyan-950/40' : 'border-slate-700'}`}
+          >
+            cm/kg
+          </button>
+        </div>
+      </div>
+      <p className="-mt-4 mb-3 text-xs text-slate-500">
+        Only used to pick a safer starting pace — never shown or tracked as a goal.
+      </p>
+      {units === 'imperial' ? (
+        <div className="mb-6 grid grid-cols-3 gap-2">
+          <input
+            type="number"
+            inputMode="numeric"
+            value={heightFt}
+            onChange={(e) => setHeightFt(e.target.value)}
+            placeholder="ft"
+            className="rounded-lg border border-slate-700 bg-slate-900 p-2 text-sm"
+          />
+          <input
+            type="number"
+            inputMode="numeric"
+            value={heightIn}
+            onChange={(e) => setHeightIn(e.target.value)}
+            placeholder="in"
+            className="rounded-lg border border-slate-700 bg-slate-900 p-2 text-sm"
+          />
+          <input
+            type="number"
+            inputMode="numeric"
+            value={weightLb}
+            onChange={(e) => setWeightLb(e.target.value)}
+            placeholder="lb"
+            className="rounded-lg border border-slate-700 bg-slate-900 p-2 text-sm"
+          />
+        </div>
+      ) : (
+        <div className="mb-6 grid grid-cols-2 gap-2">
+          <input
+            type="number"
+            inputMode="numeric"
+            value={heightCm}
+            onChange={(e) => setHeightCm(e.target.value)}
+            placeholder="cm"
+            className="rounded-lg border border-slate-700 bg-slate-900 p-2 text-sm"
+          />
+          <input
+            type="number"
+            inputMode="numeric"
+            value={weightKg}
+            onChange={(e) => setWeightKg(e.target.value)}
+            placeholder="kg"
+            className="rounded-lg border border-slate-700 bg-slate-900 p-2 text-sm"
+          />
+        </div>
+      )}
 
       <button
         onClick={submit}

@@ -1,3 +1,4 @@
+import { estimateCalories } from '../lib/planGenerator'
 import type { Plan, RunLog } from '../lib/types'
 
 function fmtMinSec(sec: number) {
@@ -7,9 +8,12 @@ function fmtMinSec(sec: number) {
 export function ProgressView({ plan, logs }: { plan: Plan | null; logs: RunLog[] }) {
   const sorted = [...logs].sort((a, b) => a.date.localeCompare(b.date))
   const totalRuns = sorted.length
-  const totalMinutes = Math.round(sorted.reduce((s, l) => s + l.durationSec, 0) / 60)
+  const totalSeconds = sorted.reduce((s, l) => s + l.durationSec, 0)
+  const totalMinutes = Math.round(totalSeconds / 60)
   const longestRun = sorted.reduce((max, l) => Math.max(max, l.durationSec), 0)
   const firstRun = sorted[0]
+  const weightKg = plan?.generatedFrom.body?.weightKg
+  const totalCalories = weightKg ? estimateCalories(weightKg, totalSeconds) : null
 
   const fourWeeksAgo = new Date()
   fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28)
@@ -21,7 +25,11 @@ export function ProgressView({ plan, logs }: { plan: Plan | null; logs: RunLog[]
         <StatCard label="Total runs" value={String(totalRuns)} />
         <StatCard label="Total time" value={`${totalMinutes} min`} />
         <StatCard label="Longest run" value={fmtMinSec(longestRun)} />
-        <StatCard label="Current week" value={plan ? `Week ${plan.currentWeek}` : '—'} />
+        {totalCalories !== null ? (
+          <StatCard label="Calories burned" value={`${totalCalories} kcal`} />
+        ) : (
+          <StatCard label="Current week" value={plan ? `Week ${plan.currentWeek}` : '—'} />
+        )}
       </div>
 
       {firstRun && (
