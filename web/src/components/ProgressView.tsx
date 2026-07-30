@@ -1,8 +1,17 @@
 import { estimateCalories } from '../lib/planGenerator'
+import { computeDurationTrend, computeEffortTrend } from '../lib/trends'
 import type { Plan, RunLog } from '../lib/types'
+import { TrendChart } from './TrendChart'
 
 function fmtMinSec(sec: number) {
   return `${Math.floor(sec / 60)}:${(sec % 60).toString().padStart(2, '0')}`
+}
+
+function weeksFromNow(days: number): string {
+  const weeks = Math.round(days / 7)
+  if (weeks <= 0) return 'any day now'
+  if (weeks === 1) return 'about 1 week'
+  return `about ${weeks} weeks`
 }
 
 export function ProgressView({ plan, logs }: { plan: Plan | null; logs: RunLog[] }) {
@@ -18,6 +27,9 @@ export function ProgressView({ plan, logs }: { plan: Plan | null; logs: RunLog[]
   const fourWeeksAgo = new Date()
   fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28)
   const recent = sorted.filter((l) => new Date(l.date) >= fourWeeksAgo)
+
+  const durationTrend = computeDurationTrend(sorted)
+  const effortTrend = computeEffortTrend(sorted)
 
   return (
     <div className="space-y-4 p-4 text-slate-100">
@@ -38,6 +50,39 @@ export function ProgressView({ plan, logs }: { plan: Plan | null; logs: RunLog[]
           <p className="mt-1 text-sm text-slate-300">
             Your first logged run was {fmtMinSec(firstRun.durationSec)}. Your longest so far is{' '}
             {fmtMinSec(longestRun)}.
+          </p>
+        </div>
+      )}
+
+      {durationTrend && (
+        <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
+          <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-400">
+            Duration trend
+          </h3>
+          <TrendChart trend={durationTrend} />
+          <p className="mt-3 text-sm text-slate-300">
+            {durationTrend.slopeMinPerDay > 0.01 ? (
+              <>
+                Your run duration is trending up by about{' '}
+                <strong className="text-cyan-300">
+                  {(durationTrend.slopeMinPerDay * 7).toFixed(1)} min/week
+                </strong>
+                .{' '}
+                {durationTrend.forecastDayTo30Min !== null && (
+                  <>
+                    At this rate, a continuous 30-min run looks{' '}
+                    {weeksFromNow(durationTrend.forecastDayTo30Min)} away.
+                  </>
+                )}
+              </>
+            ) : durationTrend.slopeMinPerDay < -0.01 ? (
+              <>Duration has trended down recently — totally normal after a cutback or rest week.</>
+            ) : (
+              <>Duration has been steady — consistency counts too.</>
+            )}
+            {effortTrend && effortTrend.slopePerWeek < -0.05 && (
+              <> Runs are also starting to feel easier at the same effort — a good sign of fitness gains.</>
+            )}
           </p>
         </div>
       )}
